@@ -1,0 +1,38 @@
+version: '3.9'
+
+volumes:
+  my-db:
+
+networks:
+    db:
+      driver: bridge
+
+services:
+  mysqldb:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=mlk
+      - MYSQL_PASSWORD=mlk
+      - MYSQL_USER=mlk-user
+      - MYSQL_DATABASE=airport-datawarehouse
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+      - my-db:/var/lib/mysql
+    networks:
+      db:
+  
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    expose:
+      - "8080"
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mysqldb
+      - PMA_PORT=3306 
+    networks:
+      db:
